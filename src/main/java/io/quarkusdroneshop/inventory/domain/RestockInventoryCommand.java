@@ -35,18 +35,14 @@ public class RestockInventoryCommand implements DroneshopCommand{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
         RestockInventoryCommand that = (RestockInventoryCommand) o;
-
         if (quantity != that.quantity) return false;
         return item == that.item;
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (item != null ? item.hashCode() : 0);
+        int result = (item != null ? item.hashCode() : 0);
         result = 31 * result + quantity;
         return result;
     }

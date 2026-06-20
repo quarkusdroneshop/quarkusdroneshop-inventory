@@ -1,21 +1,20 @@
 package io.quarkusdroneshop.inventory.infrastructure;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
+/**
+ * チャネルの切り替えは application.properties の %test プロファイルで静的に行う。
+ * このクラスはテスト間の状態クリアのみを担う。
+ */
 public class KafkaTestResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
-        Map<String, String> env = new HashMap<>();
-        Map<String, String> inventoryIn = InMemoryConnector.switchIncomingChannelsToInMemory("inventory-in");
-        Map<String, String> inventoryOut = InMemoryConnector.switchOutgoingChannelsToInMemory("inventory-out");
-        env.putAll(inventoryIn);
-        env.putAll(inventoryOut);
-        return env;
+        return Collections.emptyMap();
     }
 
     @Override

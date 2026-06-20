@@ -83,13 +83,11 @@
     <dependency>
       <groupId>io.smallrye.reactive</groupId>
       <artifactId>smallrye-reactive-messaging-in-memory</artifactId>
-      <version>2.1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <version>3.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -201,6 +199,7 @@
               <arguments>
                 <argument>${project.basedir}/src/test/scripts/generate-report.py</argument>
                 <argument>${project.build.directory}</argument>
+                <argument>${project.artifactId}</argument>
               </arguments>
             </configuration>
           </execution>

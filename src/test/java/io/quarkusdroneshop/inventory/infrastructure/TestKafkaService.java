@@ -5,8 +5,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectSpy;
 import io.quarkusdroneshop.inventory.domain.Item;
 import io.quarkusdroneshop.inventory.domain.RestockItemCommand;
-import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
-import io.smallrye.reactive.messaging.connectors.InMemorySource;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
+import io.smallrye.reactive.messaging.memory.InMemorySource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -47,8 +47,8 @@ public class TestKafkaService {
         InMemorySource<RestockItemCommand> ordersIn = connector.source(KAKFA_TOPIC);
         ordersIn.send(restockInventoryCommand);
         LOGGER.info("sent to Kafka: {}", restockInventoryCommand);
-        await().atLeast(2, TimeUnit.SECONDS).then();
+        await().atMost(5, TimeUnit.SECONDS)
+               .untilAsserted(() -> verify(inventoryService, times(1)).restockItem(new RestockItemCommand(Item.QDC_A101)));
         LOGGER.info("verifying");
-        verify(inventoryService, times(1)).restockItem(new RestockItemCommand(Item.QDC_A101));
     }
 }

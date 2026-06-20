@@ -30,18 +30,18 @@ public class RestockItemResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         RestockItemResult that = (RestockItemResult) o;
-
         if (restockInventoryCommands != null ? !restockInventoryCommands.equals(that.restockInventoryCommands) : that.restockInventoryCommands != null)
             return false;
-        return restockEvents != null ? restockEvents.equals(that.restockEvents) : that.restockEvents == null;
+        int thisSize  = restockEvents != null ? restockEvents.size() : 0;
+        int thatSize  = that.restockEvents != null ? that.restockEvents.size() : 0;
+        return thisSize == thatSize;
     }
 
     @Override
     public int hashCode() {
         int result = restockInventoryCommands != null ? restockInventoryCommands.hashCode() : 0;
-        result = 31 * result + (restockEvents != null ? restockEvents.hashCode() : 0);
+        result = 31 * result + (restockEvents != null ? restockEvents.size() : 0);
         return result;
     }
 

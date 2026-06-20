@@ -6,8 +6,8 @@ import io.quarkusdroneshop.inventory.domain.Inventory;
 import io.quarkusdroneshop.inventory.domain.Item;
 import io.quarkusdroneshop.inventory.domain.ProductMaster;
 import io.quarkusdroneshop.inventory.domain.RestockItemCommand;
-import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
-import io.smallrye.reactive.messaging.connectors.InMemorySink;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
+import io.smallrye.reactive.messaging.memory.InMemorySink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +59,8 @@ public class InventoryServiceTest {
 
         RestockItemCommand restockItemCommand = new RestockItemCommand(Item.QDC_A101);
         inventoryService.restockItem(restockItemCommand);
-        await().atLeast(2, TimeUnit.SECONDS);
+        await().atMost(5, TimeUnit.SECONDS)
+               .until(() -> results.received().size() >= 1);
         assertEquals(1, results.received().size());
     }
 
