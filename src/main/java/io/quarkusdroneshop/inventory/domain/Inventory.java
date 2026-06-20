@@ -6,9 +6,9 @@ import io.quarkusdroneshop.inventory.domain.events.RestockCompletedEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockRequestedEvent;
 
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

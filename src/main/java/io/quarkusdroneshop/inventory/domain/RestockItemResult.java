@@ -3,7 +3,7 @@ package io.quarkusdroneshop.inventory.domain;
 import io.debezium.outbox.quarkus.ExportedEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockEvent;
 
-import javax.enterprise.event.Event;
+import jakarta.enterprise.event.Event;
 import java.util.List;
 
 public class RestockItemResult {

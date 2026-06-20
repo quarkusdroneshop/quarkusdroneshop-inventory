@@ -2,7 +2,7 @@ package io.quarkusdroneshop.inventory.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity @NamedQuery(name="ProductMaster.findBySkuId", query="from ProductMaster where skuId = ?1")
