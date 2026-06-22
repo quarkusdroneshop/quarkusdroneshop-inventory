@@ -22,5 +22,7 @@ spec:
   dependsOn:
     - resource:shop-cluster-kafka
     - resource:shop-asite-inventory-in
+  consumesApis:
+    - kafka-shop-asite-inventory-in
   providesApis:
-    - quarkusdroneshop-inventory-out
+    - kafka-inventory-out
