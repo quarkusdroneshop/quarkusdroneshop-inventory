@@ -6,8 +6,21 @@ metadata:
   labels:
     app: inventory
   annotations:
-    github.com/project-slug: quarkusdroneshop/inventory
+    github.com/project-slug: quarkusdroneshop/quarkusdroneshop-inventory
+    backstage.io/kubernetes-id: quarkusdroneshop-inventory
+    backstage.io/kubernetes-cluster: sandbox1332
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
+    tektonci.io/pipeline: build-and-push-quarkusdroneshop-inventory
+    tektonci.io/pipelineNamespace: quarkusdroneshop-cicd
+    tekton.dev/cicd: "true"
+    janus-idp.io/tekton: "true"
 spec:
-  type: website
+  type: service
   owner: user:default/nmushino
   lifecycle: production
+  system: sandbox1332
+  dependsOn:
+    - resource:shop-cluster-kafka
+    - resource:shop-asite-inventory-in
+  providesApis:
+    - quarkusdroneshop-inventory-out
