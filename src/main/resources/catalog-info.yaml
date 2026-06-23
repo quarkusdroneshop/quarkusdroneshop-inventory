@@ -12,7 +12,6 @@ metadata:
     github.com/project-slug: quarkusdroneshop/quarkusdroneshop-inventory
     backstage.io/kubernetes-id: quarkusdroneshop-inventory
     backstage.io/kubernetes-cluster: b-cluster
-    backstage.io/kubernetes-namespace: quarkusdroneshop-demo
     backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=inventory
     tektonci.io/pipeline: build-and-push-quarkusdroneshop-inventory
     tektonci.io/pipelineNamespace: quarkusdroneshop-cicd
