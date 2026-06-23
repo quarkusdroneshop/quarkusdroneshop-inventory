@@ -12,7 +12,7 @@ metadata:
     github.com/project-slug: quarkusdroneshop/quarkusdroneshop-inventory
     backstage.io/kubernetes-id: quarkusdroneshop-inventory
     backstage.io/kubernetes-cluster: b-cluster
-    backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=inventory
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
     argocd/app-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
     tekton.dev/type: pipeline
     rhdh.redhat.com/tekton-enabled: "true"
