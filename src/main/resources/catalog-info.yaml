@@ -12,7 +12,8 @@ metadata:
     github.com/project-slug: quarkusdroneshop/quarkusdroneshop-inventory
     backstage.io/kubernetes-id: quarkusdroneshop-inventory
     backstage.io/kubernetes-cluster: b-cluster
-    backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
+    backstage.io/kubernetes-namespace: quarkusdroneshop-demo
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=inventory
     tektonci.io/pipeline: build-and-push-quarkusdroneshop-inventory
     tektonci.io/pipelineNamespace: quarkusdroneshop-cicd
     tekton.dev/cicd: "true"
@@ -26,6 +27,84 @@ spec:
     - resource:shop-cluster-kafka
     - resource:shop-asite-inventory-in
   consumesApis:
-    - quarkusdroneshop-inventory-inventory-in
+    - kafka-shop-asite-inventory-in
   providesApis:
-    - quarkusdroneshop-inventory-inventory-out
+    - kafka-inventory-out
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: kafka-shop-asite-inventory-in
+  description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
+  annotations:
+    backstage.io/kubernetes-cluster: b-cluster
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: user:default/nmushino
+  system: b-cluster
+  definition: |
+    asyncapi: 2.6.0
+    info:
+      title: shop-asite.inventory-in
+      version: 1.0.0
+      description: 在庫補充指示を受信するトピック
+    servers:
+      production:
+        url: shop-cluster-kafka-bootstrap:9092
+        protocol: kafka
+    channels:
+      shop-asite.inventory-in:
+        description: 在庫補充コマンドを受信するトピック
+        subscribe:
+          operationId: receiveRestockCommand
+          message:
+            name: RestockItemCommand
+            contentType: application/json
+            payload:
+              type: object
+              properties:
+                item:
+                  type: string
+                quantity:
+                  type: integer
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: kafka-inventory-out
+  description: "Kafka トピック: inventory-out（在庫更新通知）"
+  annotations:
+    backstage.io/kubernetes-cluster: b-cluster
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: user:default/nmushino
+  system: b-cluster
+  definition: |
+    asyncapi: 2.6.0
+    info:
+      title: inventory-out
+      version: 1.0.0
+      description: 在庫更新結果を通知するトピック
+    servers:
+      production:
+        url: shop-cluster-kafka-bootstrap:9092
+        protocol: kafka
+    channels:
+      inventory-out:
+        description: 在庫更新結果を送信するトピック
+        publish:
+          operationId: notifyInventoryUpdate
+          message:
+            name: InventoryUpdate
+            contentType: application/json
+            payload:
+              type: object
+              properties:
+                item:
+                  type: string
+                quantity:
+                  type: integer
+                status:
+                  type: string
