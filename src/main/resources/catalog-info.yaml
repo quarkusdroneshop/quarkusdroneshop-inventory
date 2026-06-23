@@ -3,6 +3,9 @@ kind: Component
 metadata:
   name: quarkusdroneshop-inventory
   description: 在庫管理業務のマイクロサービスです
+  tags:
+    - latest
+    - b-cluster
   labels:
     app: inventory
   annotations:
@@ -20,10 +23,9 @@ spec:
   lifecycle: production
   system: b-cluster
   dependsOn:
-    - resource:droneshopdb-postgresql
     - resource:shop-cluster-kafka
     - resource:shop-asite-inventory-in
   consumesApis:
-    - kafka-shop-asite-inventory-in
+    - quarkusdroneshop-inventory-inventory-in
   providesApis:
-    - kafka-inventory-out
+    - quarkusdroneshop-inventory-inventory-out
