@@ -40,6 +40,11 @@ metadata:
   description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-asite%3A9094.inventory-in/schema"
+  links:
+    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-asite%3A9094.inventory-in/schema"
+      title: データカタログ
+      icon: dashboard
 spec:
   type: asyncapi
   lifecycle: production
@@ -78,6 +83,11 @@ metadata:
   description: "Kafka トピック: inventory-out（在庫更新通知）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+  links:
+    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+      title: データカタログ
+      icon: dashboard
 spec:
   type: asyncapi
   lifecycle: production
