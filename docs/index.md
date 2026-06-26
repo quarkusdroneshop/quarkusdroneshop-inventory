@@ -1,37 +1,120 @@
-# Docs
-Please see the Github Pages Site for complete documentation: [quarkusdroneshop.github.io](https://quarkusdroneshop.github.io)
+# Inventory マイクロサービス
 
-# quarkus-coffesshop-inventory project
+## 概要
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Inventory はドローンショップの **在庫管理マイクロサービス** です。
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+- Kafka から入庫・出庫イベントを受信
+- PostgreSQL に在庫データを永続化
+- 在庫不足アラートを送信
 
-## Running the application in dev mode
+**フレームワーク**: Quarkus  
+**デプロイ先クラスター**: b-cluster
 
-You can run your application in dev mode that enables live coding using:
+---
+
+## アーキテクチャ
+
 ```
-./mvnw quarkus:dev
+Counter / QDCA10 / QDCA10Pro
+        │
+        ▼ Kafka: shop-asite-inventory-in
+┌─────────────────┐
+│    Inventory    │──► PostgreSQL (droneshopdb)
+│                 │
+│                 │──► Kafka: inventory-out（在庫更新通知）
+└─────────────────┘
 ```
 
-## Packaging and running the application
+### Kafka トピック一覧
 
-The application can be packaged using `./mvnw package`.
-It produces the `quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
+| トピック | 方向 | 説明 |
+|---------|------|------|
+| `shop-asite-inventory-in` | 受信 | a-cluster からの在庫操作指示 |
+| `inventory-out` | 送信 | 在庫更新通知 |
 
-The application is now runnable using `java -jar target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner.jar`.
+### 依存サービス
 
-## Creating a native executable
+- **PostgreSQL** (droneshopdb): 在庫データの永続化
+- **Apache Kafka**: イベントメッセージング
 
-You can create a native executable using: `./mvnw package -Pnative`.
+---
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
+## ローカル開発
 
-You can then execute your native executable with: `./target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner`
+### 前提条件
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
+- Java 17+
+- Docker / Docker Compose
 
-```javascript
-{"commandType":"RESTOCK_INVENTORY_COMMAND","item":"QDC_A101","quantity":0}
+### 1. インフラ起動
+
+```shell
+git clone https://github.com/quarkusdroneshop/quarkusdroneshop-support.git
+cd quarkusdroneshop-support
+docker compose up -d
 ```
+
+### 2. アプリケーション起動
+
+```shell
+git clone https://github.com/quarkusdroneshop/quarkusdroneshop-inventory.git
+cd quarkusdroneshop-inventory
+./mvnw clean compile quarkus:dev
+```
+
+Dev UI: http://localhost:8080/q/dev
+
+### 環境変数
+
+| 変数名 | デフォルト | 説明 |
+|--------|-----------|------|
+| `KAFKA_BOOTSTRAP_URLS` | `localhost:9092` | Kafka ブートストラップアドレス |
+| `PGSQL_URL` | `jdbc:postgresql://localhost:5432/droneshopdb?currentSchema=droneshop` | DB 接続 URL |
+| `PGSQL_USER` | `droneshopuser` | DB ユーザー名 |
+| `PGSQL_PASS` | `redhat-21` | DB パスワード |
+
+---
+
+## 本番デプロイ（Tekton Pipeline）
+
+### パイプライン概要
+
+```
+fetch-repository → semgrep-scan → maven-run → push-oc-apps
+```
+
+| ステップ | 内容 |
+|---------|------|
+| `fetch-repository` | GitHub からソースをクローン |
+| `semgrep-scan` | SAST セキュリティスキャン |
+| `maven-run` | uber-jar ビルド |
+| `push-oc-apps` | OpenShift b-cluster へデプロイ |
+
+### 手動実行
+
+```shell
+tkn pipeline start build-and-push-quarkusdroneshop-inventory \
+  -n quarkusdroneshop-cicd \
+  --use-param-defaults
+```
+
+---
+
+## テスト
+
+```shell
+# ユニットテスト
+./mvnw test
+
+# 統合テスト
+./mvnw verify
+```
+
+---
+
+## 注意事項
+
+- **クラスター間 Kafka**: `shop-asite-inventory-in` は a-cluster から MirrorMaker2 でミラーリング。
+- **在庫スキーマ**: `droneshop.inventory` テーブルを使用。Flyway で自動マイグレーション。
+- **b-cluster デプロイ**: RHDH の Kubernetes タブで b-cluster のポッド状態を確認できます。
