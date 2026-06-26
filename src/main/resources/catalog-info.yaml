@@ -30,14 +30,14 @@ spec:
     - resource:shop-cluster-kafka
     - resource:shop-asite-inventory-in
   consumesApis:
-    - kafka-shop-asite-inventory-in
+    - kafka-bsite-inventory-in
   providesApis:
-    - kafka-inventory-out
+    - kafka-bsite-inventory-out
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: kafka-shop-asite-inventory-in
+  name: kafka-bsite-inventory-in
   description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
@@ -80,7 +80,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: kafka-inventory-out
+  name: kafka-bsite-inventory-out
   description: "Kafka トピック: inventory-out（在庫更新通知）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
