@@ -41,9 +41,9 @@ metadata:
   description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
-    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.shop-asite.inventory-in/schema"
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
   links:
-    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.shop-asite.inventory-in/schema"
+    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
       title: データカタログ
       icon: dashboard
 spec:
