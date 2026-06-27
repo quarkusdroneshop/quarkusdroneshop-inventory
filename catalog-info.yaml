@@ -27,8 +27,9 @@ spec:
   system: b-cluster
   dependsOn:
     - resource:shop-cluster-kafka
-    - resource:shop-asite-inventory-in
+    - resource:shop-bsite-inventory-in
+    - resource:droneshopdb-bsite-postgresql
   consumesApis:
-    - kafka-shop-asite-inventory-in
+    - kafka-bsite-inventory-in
   providesApis:
-    - kafka-inventory-out
+    - kafka-bsite-inventory-out
