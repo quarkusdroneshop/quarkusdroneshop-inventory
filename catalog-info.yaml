@@ -9,27 +9,116 @@ metadata:
   labels:
     app: inventory
   annotations:
+    github.com/project-slug: quarkusdroneshop/quarkusdroneshop-inventory
     backstage.io/kubernetes-id: quarkusdroneshop-inventory
     backstage.io/kubernetes-cluster: b-cluster
     backstage.io/kubernetes-label-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
     argocd/app-selector: app.kubernetes.io/instance=quarkusdroneshop-inventory
+    tekton.dev/cicd: "true"
+    tekton.dev/type: pipeline
     tektonci.io/pipeline: build-and-push-quarkusdroneshop-inventory
     tektonci.io/pipelineNamespace: quarkusdroneshop-cicd
-    tekton.dev/type: pipeline
-    tekton.dev/cicd: "true"
     janus-idp.io/tekton: "true"
     rhdh.redhat.com/tekton-enabled: "true"
     backstage.io/techdocs-ref: dir:.
 spec:
-  type: service
+  type: microservice
   lifecycle: production
   owner: user:default/nmushino
   system: b-cluster
   dependsOn:
-    - resource:shop-cluster-kafka
+    - resource:shop-cluster-kafka-bsite
     - resource:shop-bsite-inventory-in
     - resource:droneshopdb-bsite-postgresql
   consumesApis:
     - kafka-bsite-inventory-in
   providesApis:
     - kafka-bsite-inventory-out
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: kafka-bsite-inventory-in
+  description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
+  annotations:
+    backstage.io/kubernetes-cluster: b-cluster
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
+  links:
+    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
+      title: データカタログ
+      icon: dashboard
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: user:default/nmushino
+  system: b-cluster
+  definition: |
+    asyncapi: 2.6.0
+    info:
+      title: shop-asite.inventory-in
+      version: 1.0.0
+      description: 在庫補充指示を受信するトピック
+    servers:
+      production:
+        url: shop-cluster-kafka-bootstrap:9092
+        protocol: kafka
+    channels:
+      shop-asite.inventory-in:
+        description: 在庫補充コマンドを受信するトピック
+        subscribe:
+          operationId: receiveRestockCommand
+          message:
+            name: RestockItemCommand
+            contentType: application/json
+            payload:
+              type: object
+              properties:
+                item:
+                  type: string
+                quantity:
+                  type: integer
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: kafka-bsite-inventory-out
+  description: "Kafka トピック: inventory-out（在庫更新通知）"
+  annotations:
+    backstage.io/kubernetes-cluster: b-cluster
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+  links:
+    - url: "http://openmetadata-openmetadata.apps.ocp.hfczn.sandbox2320.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+      title: データカタログ
+      icon: dashboard
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: user:default/nmushino
+  system: b-cluster
+  definition: |
+    asyncapi: 2.6.0
+    info:
+      title: inventory-out
+      version: 1.0.0
+      description: 在庫更新結果を通知するトピック
+    servers:
+      production:
+        url: shop-cluster-kafka-bootstrap:9092
+        protocol: kafka
+    channels:
+      inventory-out:
+        description: 在庫更新結果を送信するトピック
+        publish:
+          operationId: notifyInventoryUpdate
+          message:
+            name: InventoryUpdate
+            contentType: application/json
+            payload:
+              type: object
+              properties:
+                item:
+                  type: string
+                quantity:
+                  type: integer
+                status:
+                  type: string
