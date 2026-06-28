@@ -1,37 +1,64 @@
-# Docs
-Please see the Github Pages Site for complete documentation: [quarkusdroneshop.github.io](https://quarkusdroneshop.github.io)
+# quarkusdroneshop-inventory
 
-# quarkus-coffesshop-inventory project
+Quarkus ベースの在庫管理マイクロサービス。ドリンク製造マイクロサービス (QDCA10/QDCA10Pro) からの在庫切れ (86'd) イベントを受け取り、在庫補充コマンドを処理します。
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+- **バージョン**: 5.0.0-SNAPSHOT
+- **Quarkus**: 3.33.2
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## アーキテクチャ
 
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
 ```
+quarkusdroneshop-qdca10 / quarkusdroneshop-qdca10pro
+    │  inventory-in (dev) / shop-asite.inventory-in (prod) ──▶
+    ▼
+quarkusdroneshop-inventory
+    │
+    └──▶ inventory-out    (補充完了通知)
+```
+
+## Kafka トピック
+
+| チャネル | dev トピック | prod トピック | 方向 |
+|---|---|---|---|
+| inventory-in | `inventory-in` | `shop-asite.inventory-in` | 受信 |
+| inventory-out | `inventory-out` | `inventory-out` | 送信 |
+
+## 在庫補充コマンド例
+
+```json
+{"commandType":"RESTOCK_INVENTORY_COMMAND","item":"QDC_A101","quantity":0}
+```
+
+## ローカル開発
+
+```shell
+git clone https://github.com/quarkusdroneshop/quarkusdroneshop-support.git
+cd quarkusdroneshop-support
+docker compose up
+
+cd ../quarkusdroneshop-inventory
 ./mvnw quarkus:dev
 ```
 
-## Packaging and running the application
+## 環境変数 (本番)
 
-The application can be packaged using `./mvnw package`.
-It produces the `quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
+| 変数名 | 説明 |
+|---|---|
+| `KAFKA_BOOTSTRAP_URLS` | Kafka ブローカー URL |
 
-The application is now runnable using `java -jar target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner.jar`.
+## パッケージング
 
-## Creating a native executable
+```shell
+# JVM モード
+./mvnw package
+java -jar target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner.jar
 
-You can create a native executable using: `./mvnw package -Pnative`.
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
-
-You can then execute your native executable with: `./target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
-
-```javascript
-{"commandType":"RESTOCK_INVENTORY_COMMAND","item":"QDC_A101","quantity":0}
+# ネイティブビルド
+./mvnw package -Pnative -Dquarkus.native.container-build=true
+./target/quarkus-coffesshop-inventory-1.0.0-SNAPSHOT-runner
 ```
+
+## 参考
+
+- [Quarkus](https://quarkus.io/)
+- [quarkusdroneshop.github.io](https://quarkusdroneshop.github.io)
