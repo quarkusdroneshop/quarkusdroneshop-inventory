@@ -1,20 +1,31 @@
 package io.quarkusdroneshop.inventory.domain;
 
 import io.debezium.outbox.quarkus.ExportedEvent;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkusdroneshop.inventory.domain.events.RestockCompletedEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockRequestedEvent;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity @NamedQuery(name="Inventory.findByItem", query="from Inventory where productMaster.item = ?1")
-public class Inventory extends PanacheEntity {
+public class Inventory extends PanacheEntityBase {
+
+    // Postgres の DDL は識別子を自動で小文字化するため、実行時の nextval('...') 文字列
+    // リテラルとケースが一致するよう、シーケンス名を明示的に小文字で指定する。
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "inventorySeq")
+    @SequenceGenerator(name = "inventorySeq", sequenceName = "inventory_seq", allocationSize = 1)
+    public Long id;
 
     @OneToOne
     ProductMaster productMaster;
