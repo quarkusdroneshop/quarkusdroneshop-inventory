@@ -42,9 +42,9 @@ metadata:
   description: "Kafka トピック: shop-asite.inventory-in（在庫補充指示受信）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
-    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.7n8gs.sandbox847.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.27qdr.sandbox1583.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
   links:
-    - url: "http://openmetadata-openmetadata.apps.ocp.7n8gs.sandbox847.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
+    - url: "http://openmetadata-openmetadata.apps.ocp.27qdr.sandbox1583.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-in/schema"
       title: データカタログ
       icon: dashboard
 spec:
@@ -85,9 +85,9 @@ metadata:
   description: "Kafka トピック: inventory-out（在庫更新通知）"
   annotations:
     backstage.io/kubernetes-cluster: b-cluster
-    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.7n8gs.sandbox847.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+    openmetadata/explore-url: "http://openmetadata-openmetadata.apps.ocp.27qdr.sandbox1583.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
   links:
-    - url: "http://openmetadata-openmetadata.apps.ocp.7n8gs.sandbox847.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
+    - url: "http://openmetadata-openmetadata.apps.ocp.27qdr.sandbox1583.opentlc.com/topic/external-shop-cluster-kafka-bsite%3A9094.inventory-out/schema"
       title: データカタログ
       icon: dashboard
 spec:
