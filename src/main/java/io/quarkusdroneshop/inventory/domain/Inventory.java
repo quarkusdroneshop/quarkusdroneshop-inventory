@@ -54,9 +54,12 @@ public class Inventory extends PanacheEntityBase {
         return inStockQuantity - reservedQuantity;
     }
 
-    public RestockItemResult restock() {
+    // 【2026-07-21 修正】以前はリクエストされた quantity を無視して常に 99 に
+    // リセットしていたため、欠品化 (quantity=0) も任意数量の在庫追加もできなかった。
+    // 呼び出し側 (RestockItemCommand.quantity) の値をそのまま反映するようにする。
+    public RestockItemResult restock(int quantity) {
 
-        RestockInventoryCommand restockInventoryCommand = new RestockInventoryCommand(this.productMaster.item, 99);
+        RestockInventoryCommand restockInventoryCommand = new RestockInventoryCommand(this.productMaster.item, quantity);
 
         List<ExportedEvent> restockEventList = new ArrayList<ExportedEvent>();
         restockEventList.add(RestockRequestedEvent.from(this));

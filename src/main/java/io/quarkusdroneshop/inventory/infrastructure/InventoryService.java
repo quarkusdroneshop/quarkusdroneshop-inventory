@@ -29,7 +29,7 @@ public class InventoryService {
         Inventory inventory = inventoryRepository.findByItem(restockItemCommand.getItem());//Inventory.find("#Inventory.findByItem", restockItemCommand.getItem()).firstResult();
         LOGGER.debug("inventory: {}", inventory);
 
-        RestockItemResult restockItemResult = inventory.restock();
+        RestockItemResult restockItemResult = inventory.restock(restockItemCommand.getQuantity());
         LOGGER.debug("RestockItemResult: {}", restockItemResult);
 
         restockItemResult.getRestockEvents().forEach(exportedEvent -> {
