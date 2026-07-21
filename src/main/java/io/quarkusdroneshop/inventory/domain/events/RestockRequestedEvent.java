@@ -31,9 +31,15 @@ public class RestockRequestedEvent implements RestockEvent, ExportedEvent<String
     public static RestockRequestedEvent from(final Inventory inventory) {
 
 
+        // drone-component-stock の Flink ジョブ (component-stock-job.sql) は
+        // eventType をペイロード内のトップレベルフィールドとして期待するため、
+        // outboxevent テーブルの type 列と重複するが payload 内にも含めておく
+        // (Debezium Outbox の標準構成では type 列は payload に自動転記されないため)。
         ObjectNode asJson = mapper.createObjectNode()
                 .put("skuId", inventory.getProductMaster().getSkuId().toString())
-                .put("item", inventory.getProductMaster().getItem().toString());
+                .put("item", inventory.getProductMaster().getItem().toString())
+                .put("eventType", EVENT_TYPE)
+                .put("quantity", inventory.getInStockQuantity());
 
         return new RestockRequestedEvent(
                 inventory.getProductMaster().getSkuId().toString(), // UUID → String に変換

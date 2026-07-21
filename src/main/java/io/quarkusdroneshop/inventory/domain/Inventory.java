@@ -61,6 +61,11 @@ public class Inventory extends PanacheEntityBase {
         List<ExportedEvent> restockEventList = new ArrayList<ExportedEvent>();
         restockEventList.add(RestockRequestedEvent.from(this));
 
+        // drone-component-stock データプロダクトへ実数量を公開できるよう、
+        // 補充完了時点で実際に inStockQuantity を更新する
+        // (以前は RestockCompletedEvent が発行されるだけで実際の数量は変化していなかった)。
+        this.inStockQuantity = restockInventoryCommand.getQuantity();
+
         // model the restocking time making the drink
         int delay;
         switch (this.productMaster.item) {

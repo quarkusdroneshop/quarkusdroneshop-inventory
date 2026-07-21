@@ -2,11 +2,8 @@ package io.quarkusdroneshop.inventory.infrastructure;
 
 import io.debezium.outbox.quarkus.ExportedEvent;
 import io.quarkusdroneshop.inventory.domain.Inventory;
-import io.quarkusdroneshop.inventory.domain.RestockInventoryCommand;
 import io.quarkusdroneshop.inventory.domain.RestockItemCommand;
 import io.quarkusdroneshop.inventory.domain.RestockItemResult;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +23,6 @@ public class InventoryService {
     @Inject
     Event<ExportedEvent<?, ?>> event;
 
-    @Inject
-    @Channel("inventory-out")
-    Emitter<String> inventoryEmitter;
-
     public void restockItem(final RestockItemCommand restockItemCommand) {
         LOGGER.debug("restockItem: {}", restockItemCommand);
 
@@ -44,11 +37,13 @@ public class InventoryService {
             LOGGER.debug("fired: {}", exportedEvent);
         });
 
-        restockItemResult.getRestockInventoryCommands().forEach(command -> {
-            LOGGER.debug("sending: {}", command);
-            inventoryEmitter.send(command.toString());
-            LOGGER.debug("sent: {}", command);
-        });
+        // restockItemResult.getRestockInventoryCommands() は以前 inventory-out に
+        // command.toString() (非JSON) として直接送信していたが、これは inventory-out を
+        // 購読する JSON コンシューマ (drone-component-stock の Flink ジョブ等) を
+        // デシリアライズ失敗でクラッシュさせる不正なデータだった上、この Kafka 経由の
+        // RestockInventoryCommand を実際に消費する処理はどこにも存在しなかった
+        // (Debezium Outbox 経由の RestockRequestedEvent/RestockCompletedEvent が
+        // inventory-out の正規の内容)。そのため送信自体を削除した。
 
         LOGGER.debug("restock completed");
     }
