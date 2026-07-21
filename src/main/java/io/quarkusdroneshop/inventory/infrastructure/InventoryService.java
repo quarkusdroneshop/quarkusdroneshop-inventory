@@ -2,6 +2,7 @@ package io.quarkusdroneshop.inventory.infrastructure;
 
 import io.debezium.outbox.quarkus.ExportedEvent;
 import io.quarkusdroneshop.inventory.domain.Inventory;
+import io.quarkusdroneshop.inventory.domain.Item;
 import io.quarkusdroneshop.inventory.domain.RestockItemCommand;
 import io.quarkusdroneshop.inventory.domain.RestockItemResult;
 import org.slf4j.Logger;
@@ -46,6 +47,20 @@ public class InventoryService {
         // inventory-out の正規の内容)。そのため送信自体を削除した。
 
         LOGGER.debug("restock completed");
+    }
+
+    // drone-component-stock (dataproduct-component-stock-quantity) からの実消費/補充
+    // 反映専用の同期処理。restockItem() と異なり Outbox イベントは発行しない
+    // (このデータプロダクト自体が inventory-out 由来であり、ここで再発行すると
+    // 無限ループになるため)。
+    public void syncQuantity(final Item item, final int quantity) {
+        Inventory inventory = inventoryRepository.findByItem(item);
+        if (inventory == null) {
+            LOGGER.warn("syncQuantity: no Inventory row for item {}", item);
+            return;
+        }
+        LOGGER.debug("syncQuantity: {} -> {}", item, quantity);
+        inventory.setInStockQuantity(quantity);
     }
 
 }
