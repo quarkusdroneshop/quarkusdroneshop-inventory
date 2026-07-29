@@ -6,20 +6,15 @@ import io.quarkusdroneshop.inventory.domain.Inventory;
 import io.quarkusdroneshop.inventory.domain.Item;
 import io.quarkusdroneshop.inventory.domain.ProductMaster;
 import io.quarkusdroneshop.inventory.domain.RestockItemCommand;
-import io.smallrye.reactive.messaging.memory.InMemoryConnector;
-import io.smallrye.reactive.messaging.memory.InMemorySink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import jakarta.enterprise.inject.Any;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest @QuarkusTestResource(KafkaTestResource.class)
@@ -29,15 +24,11 @@ public class InventoryServiceTest {
     InventoryService inventoryService;
 
     @Inject
-    @Any
-    InMemoryConnector connector;
-
-    InMemorySink<Integer> results;
+    InventoryRepository inventoryRepository;
 
     @BeforeEach @Transactional
     public void setUp() {
 
-        results = connector.sink("inventory-out");
         ProductMaster productMaster = new ProductMaster(UUID.randomUUID(), Item.QDC_A101);
         Inventory inventory = new Inventory(productMaster,
                 1.99,
@@ -54,14 +45,18 @@ public class InventoryServiceTest {
         inventory.persistAndFlush();
     }
 
+    // restockItem() は以前 inventory-out へ直接メッセージを送っていたが、不正な
+    // データを送出しているだけで実際の消費者が存在しなかったため送信自体を削除
+    // 済み(InventoryService 参照)。実際に検証すべきは在庫数量の更新のみ。
     @Test
+    @Transactional
     public void testRestockItem() {
 
-        RestockItemCommand restockItemCommand = new RestockItemCommand(Item.QDC_A101);
+        RestockItemCommand restockItemCommand = new RestockItemCommand(Item.QDC_A101, 99);
         inventoryService.restockItem(restockItemCommand);
-        await().atMost(5, TimeUnit.SECONDS)
-               .until(() -> results.received().size() >= 1);
-        assertEquals(1, results.received().size());
+
+        Inventory updated = inventoryRepository.findByItem(Item.QDC_A101);
+        assertEquals(99, updated.getInStockQuantity());
     }
 
 }
