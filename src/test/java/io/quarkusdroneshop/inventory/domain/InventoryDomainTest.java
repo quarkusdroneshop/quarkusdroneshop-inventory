@@ -41,7 +41,7 @@ public class InventoryDomainTest {
     @Test
     void testRestock_QDC_A101() {
         Inventory inv = buildInventory(Item.QDC_A101, 50, 0);
-        RestockItemResult result = inv.restock();
+        RestockItemResult result = inv.restock(99);
         assertNotNull(result);
         assertEquals(1, result.getRestockInventoryCommands().size());
         assertEquals(2, result.getRestockEvents().size());
@@ -51,33 +51,33 @@ public class InventoryDomainTest {
 
     @Test
     void testRestock_QDC_A102() {
-        RestockItemResult result = buildInventory(Item.QDC_A102, 50, 0).restock();
+        RestockItemResult result = buildInventory(Item.QDC_A102, 50, 0).restock(99);
         assertNotNull(result);
         assertEquals(1, result.getRestockInventoryCommands().size());
     }
 
     @Test
     void testRestock_QDC_A103() {
-        RestockItemResult result = buildInventory(Item.QDC_A103, 50, 0).restock();
+        RestockItemResult result = buildInventory(Item.QDC_A103, 50, 0).restock(99);
         assertNotNull(result);
     }
 
     @Test
     void testRestock_QDC_A104_AC() {
-        RestockItemResult result = buildInventory(Item.QDC_A104_AC, 50, 0).restock();
+        RestockItemResult result = buildInventory(Item.QDC_A104_AC, 50, 0).restock(99);
         assertNotNull(result);
     }
 
     @Test
     void testRestock_QDC_A104_AT() {
-        RestockItemResult result = buildInventory(Item.QDC_A104_AT, 50, 0).restock();
+        RestockItemResult result = buildInventory(Item.QDC_A104_AT, 50, 0).restock(99);
         assertNotNull(result);
     }
 
     @Test
     void testRestock_default_branch() {
         // QDC_A105_Pro01 は switch の default に該当
-        RestockItemResult result = buildInventory(Item.QDC_A105_Pro01, 50, 0).restock();
+        RestockItemResult result = buildInventory(Item.QDC_A105_Pro01, 50, 0).restock(99);
         assertNotNull(result);
     }
 
@@ -258,15 +258,15 @@ public class InventoryDomainTest {
     @Test
     void testRestockItemResult_gettersAndSetters() {
         Inventory inv = buildInventory(Item.QDC_A101, 50, 0);
-        RestockItemResult result = inv.restock();
+        RestockItemResult result = inv.restock(99);
 
         List<RestockInventoryCommand> cmds = result.getRestockInventoryCommands();
         assertNotNull(cmds);
         assertNotNull(result.getRestockEvents());
         assertTrue(result.toString().contains("RestockItemResult{"));
 
-        RestockItemResult a = inv.restock();
-        RestockItemResult b = inv.restock();
+        RestockItemResult a = inv.restock(99);
+        RestockItemResult b = inv.restock(99);
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
         assertNotEquals(a, null);
@@ -275,7 +275,7 @@ public class InventoryDomainTest {
     @Test
     void testRestockItemResult_setters() {
         Inventory inv = buildInventory(Item.QDC_A101, 50, 0);
-        RestockItemResult result = inv.restock();
+        RestockItemResult result = inv.restock(99);
         List<RestockInventoryCommand> cmds = result.getRestockInventoryCommands();
         result.setRestockInventoryCommands(cmds);
         result.setRestockEvents(result.getRestockEvents());
