@@ -2,13 +2,18 @@ package io.quarkusdroneshop.inventory.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
 import java.util.UUID;
 
-@Entity @NamedQuery(name="ProductMaster.findBySkuId", query="from ProductMaster where skuId = ?1")
+@Entity @NamedQuery(name = "ProductMaster.findBySkuId", query = "from ProductMaster where skuId = ?1")
 public class ProductMaster extends PanacheEntityBase {
 
-    @Id @Column(unique = true, name="sku_id")
+    @Id @Column(unique = true, name = "sku_id")
     UUID skuId;
 
     @Enumerated(EnumType.STRING)
@@ -24,20 +29,26 @@ public class ProductMaster extends PanacheEntityBase {
 
     @Override
     public String toString() {
-        return "ProductMaster{" +
-                "skuId=" + skuId +
-                ", description='" + item + '\'' +
-                '}';
+        return "ProductMaster{"
+                + "skuId=" + skuId
+                + ", description='" + item + '\''
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ProductMaster that = (ProductMaster) o;
 
-        if (skuId != null ? !skuId.equals(that.skuId) : that.skuId != null) return false;
+        if (skuId != null ? !skuId.equals(that.skuId) : that.skuId != null) {
+            return false;
+        }
         return item != null ? item.equals(that.item) : that.item == null;
     }
 

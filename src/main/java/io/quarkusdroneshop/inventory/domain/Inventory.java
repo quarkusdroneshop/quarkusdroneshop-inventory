@@ -3,7 +3,6 @@ package io.quarkusdroneshop.inventory.domain;
 import io.debezium.outbox.quarkus.ExportedEvent;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkusdroneshop.inventory.domain.events.RestockCompletedEvent;
-import io.quarkusdroneshop.inventory.domain.events.RestockEvent;
 import io.quarkusdroneshop.inventory.domain.events.RestockRequestedEvent;
 
 import jakarta.persistence.Entity;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @NamedQuery(name="Inventory.findByItem", query="from Inventory where productMaster.item = ?1")
+@Entity @NamedQuery(name = "Inventory.findByItem", query = "from Inventory where productMaster.item = ?1")
 public class Inventory extends PanacheEntityBase {
 
     // Postgres の DDL は識別子を自動で小文字化するため、実行時の nextval('...') 文字列
@@ -50,7 +49,7 @@ public class Inventory extends PanacheEntityBase {
 
     int reservedQuantity;
 
-    public int availableQuantity(){
+    public int availableQuantity() {
         return inStockQuantity - reservedQuantity;
     }
 
@@ -59,7 +58,8 @@ public class Inventory extends PanacheEntityBase {
     // 呼び出し側 (RestockItemCommand.quantity) の値をそのまま反映するようにする。
     public RestockItemResult restock(int quantity) {
 
-        RestockInventoryCommand restockInventoryCommand = new RestockInventoryCommand(this.productMaster.item, quantity);
+        RestockInventoryCommand restockInventoryCommand =
+                new RestockInventoryCommand(this.productMaster.item, quantity);
 
         List<ExportedEvent> restockEventList = new ArrayList<ExportedEvent>();
         restockEventList.add(RestockRequestedEvent.from(this));
@@ -90,21 +90,22 @@ public class Inventory extends PanacheEntityBase {
             default:
                 delay = 300;
                 break;
-        };
+        }
 
         restockEventList.add(RestockCompletedEvent.from(this));
 
-        return new RestockItemResult(
-                new ArrayList<RestockInventoryCommand>(){{
-                    add(restockInventoryCommand);
-                }},
-                restockEventList);
+        List<RestockInventoryCommand> restockInventoryCommands = new ArrayList<>();
+        restockInventoryCommands.add(restockInventoryCommand);
+
+        return new RestockItemResult(restockInventoryCommands, restockEventList);
     }
 
     public Inventory() {
     }
 
-    public Inventory(ProductMaster productMaster, Double unitCost, Double maxRetailPrice, int orderQuantity, int inStockQuantity, int backOrderQuantity, LocalDate lastStockDate, LocalDate lastSaleDate, int minimumQuantity, int maximumQuantity, int reservedQuantity) {
+    public Inventory(ProductMaster productMaster, Double unitCost, Double maxRetailPrice, int orderQuantity,
+            int inStockQuantity, int backOrderQuantity, LocalDate lastStockDate, LocalDate lastSaleDate,
+            int minimumQuantity, int maximumQuantity, int reservedQuantity) {
         this.productMaster = productMaster;
         this.unitCost = unitCost;
         this.maxRetailPrice = maxRetailPrice;
@@ -120,41 +121,71 @@ public class Inventory extends PanacheEntityBase {
 
     @Override
     public String toString() {
-        return "Inventory{" +
-                "productMaster=" + productMaster +
-                ", unitCost=" + unitCost +
-                ", maxRetailPrice=" + maxRetailPrice +
-                ", orderQuantity=" + orderQuantity +
-                ", inStockQuantity=" + inStockQuantity +
-                ", backOrderQuantity=" + backOrderQuantity +
-                ", lastStockDate=" + lastStockDate +
-                ", lastSaleDate=" + lastSaleDate +
-                ", minimumQuantity=" + minimumQuantity +
-                ", maximumQuantity=" + maximumQuantity +
-                ", reservedQuantity=" + reservedQuantity +
-                '}';
+        return "Inventory{"
+                + "productMaster=" + productMaster
+                + ", unitCost=" + unitCost
+                + ", maxRetailPrice=" + maxRetailPrice
+                + ", orderQuantity=" + orderQuantity
+                + ", inStockQuantity=" + inStockQuantity
+                + ", backOrderQuantity=" + backOrderQuantity
+                + ", lastStockDate=" + lastStockDate
+                + ", lastSaleDate=" + lastSaleDate
+                + ", minimumQuantity=" + minimumQuantity
+                + ", maximumQuantity=" + maximumQuantity
+                + ", reservedQuantity=" + reservedQuantity
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Inventory inventory = (Inventory) o;
 
-        if (orderQuantity != inventory.orderQuantity) return false;
-        if (inStockQuantity != inventory.inStockQuantity) return false;
-        if (backOrderQuantity != inventory.backOrderQuantity) return false;
-        if (minimumQuantity != inventory.minimumQuantity) return false;
-        if (maximumQuantity != inventory.maximumQuantity) return false;
-        if (reservedQuantity != inventory.reservedQuantity) return false;
-        if (productMaster != null ? !productMaster.equals(inventory.productMaster) : inventory.productMaster != null)
+        if (orderQuantity != inventory.orderQuantity) {
             return false;
-        if (unitCost != null ? !unitCost.equals(inventory.unitCost) : inventory.unitCost != null) return false;
-        if (maxRetailPrice != null ? !maxRetailPrice.equals(inventory.maxRetailPrice) : inventory.maxRetailPrice != null)
+        }
+        if (inStockQuantity != inventory.inStockQuantity) {
             return false;
-        if (lastStockDate != null ? !lastStockDate.equals(inventory.lastStockDate) : inventory.lastStockDate != null)
+        }
+        if (backOrderQuantity != inventory.backOrderQuantity) {
             return false;
+        }
+        if (minimumQuantity != inventory.minimumQuantity) {
+            return false;
+        }
+        if (maximumQuantity != inventory.maximumQuantity) {
+            return false;
+        }
+        if (reservedQuantity != inventory.reservedQuantity) {
+            return false;
+        }
+        boolean productMasterEqual = productMaster != null
+                ? productMaster.equals(inventory.productMaster)
+                : inventory.productMaster == null;
+        if (!productMasterEqual) {
+            return false;
+        }
+        if (unitCost != null ? !unitCost.equals(inventory.unitCost) : inventory.unitCost != null) {
+            return false;
+        }
+        boolean maxRetailPriceEqual = maxRetailPrice != null
+                ? maxRetailPrice.equals(inventory.maxRetailPrice)
+                : inventory.maxRetailPrice == null;
+        if (!maxRetailPriceEqual) {
+            return false;
+        }
+        boolean lastStockDateEqual = lastStockDate != null
+                ? lastStockDate.equals(inventory.lastStockDate)
+                : inventory.lastStockDate == null;
+        if (!lastStockDateEqual) {
+            return false;
+        }
         return lastSaleDate != null ? lastSaleDate.equals(inventory.lastSaleDate) : inventory.lastSaleDate == null;
     }
 

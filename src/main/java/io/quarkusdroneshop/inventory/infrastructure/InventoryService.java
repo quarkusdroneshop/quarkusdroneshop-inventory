@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class InventoryService {
@@ -27,7 +26,7 @@ public class InventoryService {
     public void restockItem(final RestockItemCommand restockItemCommand) {
         LOGGER.debug("restockItem: {}", restockItemCommand);
 
-        Inventory inventory = inventoryRepository.findByItem(restockItemCommand.getItem());//Inventory.find("#Inventory.findByItem", restockItemCommand.getItem()).firstResult();
+        Inventory inventory = inventoryRepository.findByItem(restockItemCommand.getItem());
         LOGGER.debug("inventory: {}", inventory);
 
         RestockItemResult restockItemResult = inventory.restock(restockItemCommand.getQuantity());

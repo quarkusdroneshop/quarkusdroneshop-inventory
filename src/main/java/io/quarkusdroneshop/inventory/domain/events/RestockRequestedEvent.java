@@ -7,7 +7,6 @@ import io.debezium.outbox.quarkus.ExportedEvent;
 import io.quarkusdroneshop.inventory.domain.Inventory;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public class RestockRequestedEvent implements RestockEvent, ExportedEvent<String, JsonNode> {
 

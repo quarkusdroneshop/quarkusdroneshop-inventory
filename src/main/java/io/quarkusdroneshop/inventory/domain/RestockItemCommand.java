@@ -2,10 +2,8 @@ package io.quarkusdroneshop.inventory.domain;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.StringJoiner;
-
 @RegisterForReflection
-public class RestockItemCommand implements DroneshopCommand{
+public class RestockItemCommand implements DroneshopCommand {
 
     Item item;
 
@@ -22,7 +20,7 @@ public class RestockItemCommand implements DroneshopCommand{
      *
      * @param item Item
      */
-    public RestockItemCommand(Item item){
+    public RestockItemCommand(Item item) {
         this.item = item;
         this.quantity = 0;
     }
@@ -39,20 +37,26 @@ public class RestockItemCommand implements DroneshopCommand{
 
     @Override
     public String toString() {
-        return "RestockItemCommand{" +
-                "item=" + item +
-                ", quantity=" + quantity +
-                '}';
+        return "RestockItemCommand{"
+                + "item=" + item
+                + ", quantity=" + quantity
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         RestockItemCommand that = (RestockItemCommand) o;
 
-        if (quantity != that.quantity) return false;
+        if (quantity != that.quantity) {
+            return false;
+        }
         return item == that.item;
     }
 

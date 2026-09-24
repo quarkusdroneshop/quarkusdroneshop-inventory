@@ -37,7 +37,8 @@ public class KafkaService {
         if (update == null) {
             return;
         }
-        logger.debug("ComponentStockQuantityUpdate received: item={}, quantity={}", update.getItem(), update.getQuantity());
+        logger.debug("ComponentStockQuantityUpdate received: item={}, quantity={}",
+                update.getItem(), update.getQuantity());
         inventoryService.syncQuantity(update.getItem(), (int) update.getQuantity());
     }
 

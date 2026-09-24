@@ -3,7 +3,7 @@ package io.quarkusdroneshop.inventory.domain;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class RestockInventoryCommand implements DroneshopCommand{
+public class RestockInventoryCommand implements DroneshopCommand {
 
     Item item;
 
@@ -25,18 +25,24 @@ public class RestockInventoryCommand implements DroneshopCommand{
 
     @Override
     public String toString() {
-        return "RestockInventoryCommand{" +
-                "item=" + item +
-                ", quantity=" + quantity +
-                '}';
+        return "RestockInventoryCommand{"
+                + "item=" + item
+                + ", quantity=" + quantity
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RestockInventoryCommand that = (RestockInventoryCommand) o;
-        if (quantity != that.quantity) return false;
+        if (quantity != that.quantity) {
+            return false;
+        }
         return item == that.item;
     }
 
